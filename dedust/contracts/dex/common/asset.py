@@ -1,4 +1,5 @@
-from pytoniq import begin_cell, Cell, Builder, Slice, Address, LiteBalancer
+from tonsdk.boc import begin_cell, Slice, Builder
+from tonsdk.utils import Address
 from typing import Union, Type
 from .asset_type import AssetType
 from .asset_error import AssetError
@@ -22,12 +23,12 @@ class Asset:
 
     @staticmethod
     def from_slice(src: Slice) -> Type["Asset"]:
-        _type = src.load_uint(4)
+        _type = src.read_uint(4)
         if _type == AssetType.NATIVE.value:
             return Asset.native()
 
         elif _type == AssetType.JETTON.value:
-            return Asset(AssetType.JETTON, f"{src.load_uint(8)}:{src.load_bytes(32).hex()}")
+            return Asset(AssetType.JETTON, f"{src.read_uint(8)}:{src.read_bytes(32).hex()}")
 
         else:
             return AssetError("Asset is not supported.")
@@ -49,10 +50,10 @@ class Asset:
     
     def to_slice(self) -> Slice:
         if self._type == AssetType.NATIVE:
-            return begin_cell().store_uint(0, 4).end_cell().begin_parse()
+            return begin_cell().store_uint(0, 4).end_cell()
 
         elif self._type == AssetType.JETTON:
-            return begin_cell().store_uint(AssetType.JETTON.value, 4).store_int(self.address.wc, 8).store_bytes(self.address.hash_part).end_cell().begin_parse()
+            return begin_cell().store_uint(AssetType.JETTON.value, 4).store_int(self.address.wc, 8).store_bytes(self.address.hash_part).end_cell()
 
         else:
             return AssetError("Asset is not supported.")
@@ -62,7 +63,7 @@ class Asset:
             return "native"
 
         elif self._type == AssetType.JETTON:
-            return f"jetton:{self.address.to_str(0, 0, 0)}"
+            return f"jetton:{self.address.to_string(0, 0, 0)}"
 
         else:
             return AssetError("Asset is not supported.")

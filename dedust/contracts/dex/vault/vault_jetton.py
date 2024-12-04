@@ -1,10 +1,12 @@
-from pytoniq import begin_cell, Cell, Address, LiteBalancer
+from tonsdk.utils import Address
+from tonsdk.boc import begin_cell, Cell
 from typing import Union, Type
 from .vault import Vault, SwapParams, SwapStep
 from ..common.readiness_status import ReadinessStatus
 from ..common.asset import Asset
 from ..common.readiness_status import ReadinessStatus
 from ..pool import PoolType
+from ....api import Provider
 
 
 class VaultJetton:
@@ -17,17 +19,15 @@ class VaultJetton:
     def create_from_address(address: Union[Address, str]) -> Type["VaultJetton"]:
         return VaultJetton(address)
     
-    async def get_readiness_status(self, provider: LiteBalancer) -> ReadinessStatus:
-        state = await provider.get_account_state(self.address)
-        state = state.state.type_
+    async def get_readiness_status(self, provider: Provider) -> ReadinessStatus:
+        state = await provider.getState(self.address)
         if state != "active":
             return ReadinessStatus.NOT_DEPLOYED
 
-        stack = await provider.run_get_method(address=self.address,
-                                              method="is_ready",
-                                              stack=[])
+        stack = await provider.runGetMethod(address=self.address,
+                                            method="is_ready")
 
-        return ReadinessStatus.READY if bool(stack[0]) else ReadinessStatus.NOT_READY
+        return ReadinessStatus.READY if bool(stack[0]["value"]) else ReadinessStatus.NOT_READY
 
     @staticmethod
     def create_deposit_liquidity_payload(

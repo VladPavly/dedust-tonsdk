@@ -1,28 +1,38 @@
 from dedust import Asset, Factory, PoolType, SwapParams, SwapStep, JettonRoot, JettonWallet, VaultJetton, Pool
+from dedust.api import Provider
 import asyncio
-from pytoniq import WalletV4R2, LiteBalancer
+from tonsdk.utils import Address, bytes_to_b64str
+from tonsdk.contract.wallet import Wallets, WalletVersionEnum
 
 mnemonics = ["your", "mnemonics", "here"]
 
+mnemonics, pub_k, priv_k, wallet = Wallets.from_mnemonics(mnemonics=mnemonics, version=WalletVersionEnum.v4r2,
+                                                          workchain=0)
+
 async def main():
-    provider = LiteBalancer.from_mainnet_config(1)
-    await provider.start_up()
+    provider = Provider()
 
-    wallet = await WalletV4R2.from_mnemonic(provider=provider, mnemonics=mnemonics)
+    recipient_address = wallet.address
 
-    SCALE_ADDRESS = "EQBlqsm144Dq6SjbPI4jjZvA1hqTIP3CvHovbIfW_t-SCALE"
+    SCALE_ADDRESS = Address("EQBlqsm144Dq6SjbPI4jjZvA1hqTIP3CvHovbIfW_t-SCALE")
 
     SCALE = Asset.jetton(SCALE_ADDRESS)
     TON = Asset.native()
 
     pool = await Factory.get_pool(PoolType.VOLATILE, [TON, SCALE], provider)
-    lp_wallet = await pool.get_wallet(wallet.address, provider)
+    lp_wallet = await pool.get_wallet(recipient_address, provider)
 
     burn_payload = lp_wallet.create_burn_payload(
         amount=(await lp_wallet.get_balance(provider))
     )
-    await wallet.transfer(destination=lp_wallet.address,
-                          amount=int(0.5*1e9),
-                          body=burn_payload)
+
+    seqno = await provider.runGetMethod(address=recipient_address, method="seqno")
+    query = wallet.create_transfer_message(to_addr=lp_wallet.address,
+                                           amount=int(0.5*1e9),
+                                           seqno=seqno[0]["value"],
+                                           payload=burn_payload)
+
+    boc = bytes_to_b64str(query["message"].to_boc(False))
+    await provider.sendBoc(boc)
 
 asyncio.run(main())
