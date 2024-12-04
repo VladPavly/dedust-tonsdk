@@ -14,7 +14,7 @@ class VaultNative:
         self.address = Address(address) if type(address) == str else address
     
     @staticmethod
-    def create_from_address(address: Union[Address, str]) -> "VaultNative":
+    def create_from_address(address: Union[Address, str]) -> Type["VaultJetton"]:
         return VaultNative(address)
     
     async def get_readiness_status(self, provider: LiteBalancer) -> ReadinessStatus:
@@ -70,6 +70,6 @@ class VaultNative:
             .store_address(pool_address)\
             .store_uint(0, 1)\
             .store_coins(limit)\
-            .store_maybe_ref(Vault.pack_swap_step(_next))\
+            .store_maybe_ref(None)\
             .store_ref(Vault.pack_swap_params(swap_params))\
             .end_cell()

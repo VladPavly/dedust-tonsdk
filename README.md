@@ -1,6 +1,4 @@
 # DeDust SDK for Python
-[![PyPI version](https://img.shields.io/pypi/v/dedust)](https://pypi.org/project/dedust)
-[![Downloads](https://static.pepy.tech/badge/dedust)](https://pypi.org/project/dedust)
 
 Analogue of DeDust SDK for Python.
 
@@ -12,6 +10,7 @@ You can swap tokens, deposit liquidity and many more.
 
 ### Dependencies
 
+* httpx
 * pytoniq
 
 ### Installing
@@ -71,12 +70,6 @@ asyncio.run(main())
 
 ## Version History
 
-* 1.1.4
-    * Fixed `estimate_deposit_out` get method
-* 1.1.2
-    * Update examples, fix bug with VaultNative
-* 1.1.1
-    * Removed httpx from dependencies
 * 1.1.0
     * Change tonsdk to pytoniq
 * 1.0.5
@@ -116,3 +109,4 @@ If you like the library, I will be glad to accept donations.
 
 * [dedust-sdk](https://github.com/dedust-io/sdk)
 * [dedust-docs](https://api.dedust.io)
+

@@ -14,7 +14,7 @@ class VaultJetton:
         self.address = Address(address) if type(address) == str else address
 
     @staticmethod
-    def create_from_address(address: Union[Address, str]) -> "VaultJetton":
+    def create_from_address(address: Union[Address, str]) -> Type["VaultJetton"]:
         return VaultJetton(address)
     
     async def get_readiness_status(self, provider: LiteBalancer) -> ReadinessStatus:
@@ -32,8 +32,8 @@ class VaultJetton:
     @staticmethod
     def create_deposit_liquidity_payload(
         poolType: PoolType,
-        assets: list[Asset],
-        target_balances: list[int],
+        assets: [Asset, Asset],
+        target_balances: [int, int],
         minimal_lp_amount: int = 0,
         fulfill_payload: Union[Cell, None] = None,
         reject_payload: Union[Cell, None] = None
@@ -54,8 +54,8 @@ class VaultJetton:
     def create_swap_payload(
         pool_address: Address,
         limit: int = 0,
-        _next: Union[Address, None] = None,
-        swap_params: Union[SwapParams, None] = None
+        _next: Address = None,
+        swap_params: SwapParams = None
     ) -> Cell:
         return begin_cell()\
             .store_uint(0xe3a0d482, 32)\

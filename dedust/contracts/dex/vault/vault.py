@@ -8,7 +8,7 @@ class SwapStep:
         self,
         pool_address: Address,
         limit: int = 0,
-        _next: Union["SwapStep", None] = None
+        _next: Union[Type["SwapStep"], None] = None
     ):
         self.pool_address = pool_address
         self.limit = limit
@@ -20,8 +20,8 @@ class SwapParams:
         deadline = 0,
         recipient_address: Union[Address, str, None] = None,
         referral_address: Union[Address, str, None] = None,
-        fulfill_payload: Union[Cell, None] = None,
-        reject_payload: Union[Cell, None] = None
+        fulfill_payload: Union[Address, str, None] = None,
+        reject_payload: Union[Address, str, None] = None
     ):
         self.deadline = deadline
         self.recipient_address = recipient_address
@@ -31,7 +31,7 @@ class SwapParams:
 
 class Vault:
     def __init__(
-        self, address: Union[Address, str]
+        self, address: [Address, str]
     ):
         self.address = Address(address) if type(address) == str else address
     
@@ -61,7 +61,7 @@ class Vault:
                 .end_cell()
 
     @staticmethod
-    def pack_swap_step(_next: Union[SwapStep, None] = None) -> Union[Cell, None]:
+    def pack_swap_step(_next: SwapStep = None) -> Cell:
         if _next is None:
             return None
 
@@ -69,6 +69,6 @@ class Vault:
             .store_address(_next.pool_address)\
             .store_uint(0, 1)\
             .store_coins(_next.limit)\
-            .store_maybe_ref(Vault.pack_swap_step(_next._next) if _next._next else None)\
+            .store_maybe_ref(Vault.pack_swap_step(_next.pool_address) if _next._next else None)\
             .end_cell()
             

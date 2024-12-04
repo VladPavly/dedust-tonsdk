@@ -34,6 +34,4 @@ async def main():
                           amount=swap_amount,
                           body=swap)
 
-    await provider.close_all()
-
 asyncio.run(main())

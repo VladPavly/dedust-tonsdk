@@ -1,4 +1,4 @@
-from dedust import Asset, Factory, PoolType
+from dedust import Asset, Factory, PoolType, SwapParams, SwapStep, JettonRoot, JettonWallet, VaultJetton, Pool
 import asyncio
 from pytoniq import WalletV4R2, LiteBalancer
 
@@ -24,7 +24,5 @@ async def main():
     await wallet.transfer(destination=lp_wallet.address,
                           amount=int(0.5*1e9),
                           body=burn_payload)
-
-    await provider.close_all()
 
 asyncio.run(main())

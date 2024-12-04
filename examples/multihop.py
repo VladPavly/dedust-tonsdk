@@ -17,8 +17,7 @@ async def main():
     TON = Asset.native()
     BOLT = Asset.jetton(BOLT_ADDRESS)
 
-    # SCALE -> TON -> BOLT
-    TON_SCALE = await Factory.get_pool(PoolType.VOLATILE, [SCALE, TON], provider)
+    TON_SCALE = await Factory.get_pool(PoolType.VOLATILE, [TON, SCALE], provider)
     TON_BOLT = await Factory.get_pool(PoolType.VOLATILE, [TON, BOLT], provider)
 
     scale_vault = await Factory.get_jetton_vault(SCALE_ADDRESS, provider)
@@ -38,7 +37,5 @@ async def main():
     await wallet.transfer(destination=scale_wallet.address,
                           amount=int(0.3*1e9),
                           body=swap)
-
-    await provider.close_all()
 
 asyncio.run(main())
