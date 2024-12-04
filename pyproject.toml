@@ -1,5 +1,5 @@
 [project]
-name = "dedust"
+name = "dedust-tonsdk"
 description = "DeDust - DeDust SDK for Python."
 readme = "README.md"
 version = "1.0.5"
